@@ -1,0 +1,77 @@
+<template>
+    <div class="container">
+         <div class="modal-dialog">
+            <div class="modal-content background-customizable modal-content-desktop">
+                <div>
+                    <div class="banner-customizable">
+                        <center>
+                            
+                        </center>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <h1>Welcome</h1>
+                    <span>{{this.info}}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+import * as axios from 'axios';
+const MAGICRESPONSEURL = "https://api.yungangwu.myinstance.com/magicresponse/"; 
+
+export default {
+    name: 'Hogwarts',
+    data() {
+        return {
+            info: '',
+        };
+    },
+    mounted: function() {
+      axios 
+        .post(MAGICRESPONSEURL,{
+          prewarm: 'yes',        
+        })
+        .then(response => {
+            console.log (response.data.body);
+            axios
+                .post(MAGICRESPONSEURL,{
+                    prewarm: 'no',        
+                    username: this.$route.query.username,        
+                    magicstring: this.$route.query.answer,
+                })
+                .then(response => {
+                    let obj = JSON.parse(response.data.body);
+
+                    const tokens = obj.IdToken.split('.');
+                    const tokenObj = JSON.parse(Buffer.from(tokens[1], 'base64').toString());
+                    const currentDate = new Date(tokenObj["exp"]*1000);
+                    
+                    this.$router.push({
+                        name: "UserInfo",
+                        params: {
+                            username: tokenObj["cognito:username"],
+                            role: tokenObj["cognito:roles"],
+                            group: tokenObj["cognito:groups"],
+                            email: tokenObj["email"],
+                            exp: currentDate.toLocaleString(),
+                            timezone: currentDate.toString().match(/\((.*)\)/).pop(),
+                        }
+                    });
+                
+
+                })
+                .catch(function (error) { 
+                    this.info = error;
+                    console.log(error);
+            });          
+        })
+        .catch(function (error) { 
+            this.info = error
+            console.log(error);
+        });
+    },
+};
+</script>

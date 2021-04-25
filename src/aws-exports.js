@@ -21,8 +21,8 @@ const awsmobile = {
     },
     "federationTarget": "COGNITO_USER_POOLS",
     
-    "magiclink_url": "https://cognitopoc.z8.web.core.windows.net/magiclink/",
-    "magicresponse_url": "https://cognitopoc.z8.web.core.windows.net/magicresponse/" 
+    "magiclink_url": "https://warua56er6.execute-api.ap-southeast-2.amazonaws.com/poc/magiclink/",
+    "magicresponse_url": "https://warua56er6.execute-api.ap-southeast-2.amazonaws.com/poc/magicresponse/" 
 
 };
 

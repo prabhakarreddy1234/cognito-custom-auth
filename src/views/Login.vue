@@ -33,7 +33,8 @@
 <script>
 import { Auth } from 'aws-amplify';
 import * as axios from 'axios';
-const MAGICLINKURL = "https://cognitopoc.z8.web.core.windows.net/magiclink/";
+import awsconfig from '../aws-exports';
+const MAGICLINKURL = awsconfig.magiclink_url;
 
 export default {
     name: 'Login',

@@ -19,7 +19,10 @@ const awsmobile = {
         "redirectSignOut": "https://cognitopoc.z8.web.core.windows.net",
         "responseType": "code"
     },
-    "federationTarget": "COGNITO_USER_POOLS"
+    "federationTarget": "COGNITO_USER_POOLS",
+    
+    "magiclink_url": "https://cognitopoc.z8.web.core.windows.net/magiclink/",
+    "magicresponse_url": "https://cognitopoc.z8.web.core.windows.net/magicresponse/" 
 
 };
 

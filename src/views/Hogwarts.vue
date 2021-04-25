@@ -20,7 +20,8 @@
 
 <script>
 import * as axios from 'axios';
-const MAGICRESPONSEURL = "https://api.yungangwu.myinstance.com/magicresponse/"; 
+import awsconfig from '../aws-exports';
+const MAGICRESPONSEURL = awsconfig.magicresponse_url; 
 
 export default {
     name: 'Hogwarts',

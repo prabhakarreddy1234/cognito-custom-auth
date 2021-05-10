@@ -23,6 +23,7 @@ const awsmobile = {
     
     "magiclink_url": "https://warua56er6.execute-api.ap-southeast-2.amazonaws.com/poc/magiclink/",
     "magicresponse_url": "https://warua56er6.execute-api.ap-southeast-2.amazonaws.com/poc/magicresponse/" 
+    "forgot_password_link": "true" 
 
 };
 

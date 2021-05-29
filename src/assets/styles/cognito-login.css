@@ -10,6 +10,25 @@ body {
     }
 }
 
+header.app-header {
+    align-items: center;
+    background: #fff1e2;
+    box-shadow: 0 1px 2px 0 rgba(0,0,0,0.2);
+    display: flex;
+    height: 45px;
+    left: 0;
+    margin: 0;
+    position: fixed;
+    top: 0;
+    transition: margin-left 0.2s ease-in-out, margin-right 0.2s ease-in-out, width 0.2s ease-in-out;
+    width: 100%;
+    z-index: 100;
+}
+
+.container {
+    padding-top: 50px;
+}
+
 .panel {
     padding-top: 15px;
     padding-bottom: 15px;
@@ -20,12 +39,21 @@ body {
     background: transparent;
 }
 
+.modal-content h2 {
+    color: #4c4c4c;
+    font-size: 20px;
+    font-weight: 500;
+    margin: 0;
+    /* padding: 0 20px 20px 20px; */
+}
+
 .modal-content {
     width: 100% !important;
     margin: 0px auto;
     border: 0px;
     overflow: hidden;
     border-radius: 0%;
+        box-shadow: 0 1px 3px 0 rgba(0,0,0,0.2),0 1px 1px 0 rgba(0,0,0,0.14),0 2px 1px 0 rgba(0,0,0,0.12);
 }
 
 .modal-content-mobile {
@@ -108,7 +136,7 @@ body {
 
 .banner-customizable {
     padding: 2px 0px 2px 0px;
-    background-color: lightgray;
+    background-color: #FF3960;
 }
 
 .label-customizable {

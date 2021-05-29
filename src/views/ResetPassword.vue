@@ -1,6 +1,8 @@
 <template>
   <div class="container">
     <div class="modal-dialog">
+      <b-toast id="info-toast" title="info" v-model="toastmsg" static>
+      </b-toast>
       <div class="modal-content background-customizable modal-content-mobile">
         <div>
           <div class="banner-customizable">
@@ -61,10 +63,6 @@
     </div>
   </div>
 </template>
-<style scoped>
-@import "../assets/styles/bootstrap.css";
-@import "../assets/styles/cognito-login.css";
-</style>
 <script>
 import { Auth } from "aws-amplify";
 
@@ -77,6 +75,7 @@ export default {
       newpassword: "",
       newpwddup: "",
       loading: false,
+      toastmsg: "",
     };
   },
   methods: {

@@ -1,16 +1,17 @@
 <template>
   <div class="container">
     <div class="modal-dialog">
-      <div
-        class="modal-content background-customizable modal-content-mobile visible-xs visible-sm"
-      >
+      <div class="modal-content background-customizable modal-content-mobile visible-xs visible-sm" >
         <div>
           <div class="banner-customizable">
             <center></center>
           </div>
         </div>
         <div class="modal-body">
-          <div v-if="status === 'show'">
+          <div v-if="user !==null">
+            <ChangePassword :user="user" />
+          </div>
+          <div v-else>
             <h2>Login</h2>
             <br />
             <div>
@@ -25,6 +26,7 @@
                     autocapitalize="none"
                     required
                     v-model="username"
+                    :disabled="loading"
                   />
                 </div>
                 <p />
@@ -37,10 +39,22 @@
                     placeholder="Password"
                     required
                     v-model="password"
+                    :disabled="loading"
                   />
                 </div>
                 <p></p>
-                <b-button
+                <b-button v-if="loading"
+                  variant="success"
+                  type="submit"
+                  form="signInForm"
+                  value="Submit"
+                  ><span
+                class="spinner-border spinner-border-sm"
+                role="status"
+                aria-hidden="true"
+              ></span>Sign In
+              </b-button>
+                <b-button v-else
                   variant="success"
                   type="submit"
                   form="signInForm"
@@ -164,90 +178,108 @@
               </div>
             </div>
           </div>
-          <div v-else>
-            <center>
-              <b-spinner variant="primary" label="Spinning" />
-              <p></p>
-              <span>
-                Loading
-                <b-icon icon="three-dots" animation="cylon"></b-icon>
-              </span>
-            </center>
-          </div>
         </div>
       </div>
     </div>
   </div>
 </template>
-<style scoped>
-@import "../assets/styles/bootstrap.css";
-@import "../assets/styles/cognito-login.css";
-</style>
 <script>
-import { Auth, Hub } from "aws-amplify";
+import { Auth } from "@aws-amplify/auth";
+import { Hub } from "@aws-amplify/core";
+import ChangePassword from "./ChangePassword.vue";
 
 export default {
+  components: { ChangePassword },
   name: "HelloWorld",
   data() {
     return {
-      status: "show",
+      loading: false,
       username: "",
       password: "",
+      user: null,
     };
   },
   mounted: function () {
+    // window.localStorage.removeItem("idtoken", "");
+    // window.localStorage.removeItem("username", "");
+
     Hub.listen("auth", ({ payload: { event, data } }) => {
       switch (event) {
         case "cognitoHostedUI":
+          this.loading = false;
           Auth.currentAuthenticatedUser().then((userData) => {
             console.log("user", userData);
-            this.transitUserInfo(userData);
+            this.$router.push("/userinfo");
+            // this.transitUserInfo(userData);
           });
           break;
         case "signOut":
           // setUser(null);
+          this.loading = false;
           break;
         case "signIn_failure":
         case "cognitoHostedUI_failure":
           console.log("Sign in failure", data);
+          this.loading = false;
           break;
       }
     });
   },
   methods: {
-    transitUserInfo(userData) {
-      const tokens = userData.signInUserSession.idToken.jwtToken.split(".");
-      const tokenObj = JSON.parse(Buffer.from(tokens[1], "base64").toString());
-      const currentDate = new Date(tokenObj["exp"] * 1000);
-
-      this.$router.push({
-        name: "UserInfo",
-        params: {
-          username: tokenObj["cognito:username"],
-          role: tokenObj["cognito:roles"],
-          group: tokenObj["cognito:groups"],
-          email: tokenObj["email"],
-          exp: currentDate.toLocaleString(),
-          timezone: currentDate
-            .toString()
-            .match(/\((.*)\)/)
-            .pop(),
+    toast(msg, type = 'info') {
+          this.$bvToast.toast(msg, {
+            title: type,
+            toaster: "b-toaster-top-center",
+            solid: true,
+            static: true,
+            appendToast: true,
+            // noAutoHide: true,
+            variant: type === "info"? "success" : "warning",
+          });
         },
-      });
-    },
+
+    // transitUserInfo(userData) {
+    //   const tokens = userData.signInUserSession.idToken.jwtToken.split(".");
+    //   const tokenObj = JSON.parse(Buffer.from(tokens[1], "base64").toString());
+    //   const currentDate = new Date(tokenObj["exp"] * 1000);
+
+    //   this.$router.push({
+    //     name: "UserInfo",
+    //     params: {
+    //       username: tokenObj["cognito:username"],
+    //       role: tokenObj["cognito:roles"],
+    //       group: tokenObj["cognito:groups"],
+    //       email: tokenObj["email"],
+    //       exp: currentDate.toLocaleString(),
+    //       timezone: currentDate
+    //         .toString()
+    //         .match(/\((.*)\)/)
+    //         .pop(),
+    //     },
+    //   });
+    // },
 
     async oauthLogin(providerName) {
-      this.status = "loading";
+      this.loading = true;
       Auth.federatedSignIn({ provider: providerName });
     },
     async login() {
-      this.status = "loading";
+      this.loading = true;
       Auth.signIn(this.username, this.password)
         .then((userData) => {
           console.log("user", userData);
-          this.transitUserInfo(userData);
+          if (userData.challengeName === "NEW_PASSWORD_REQUIRED") {
+            this.user = userData;
+            this.loading = false;
+          } else {
+            this.$router.push ("/userinfo");
+            // this.transitUserInfo(userData);
+          }
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          console.log(err.message);
+          this.toast(err.message, "Warning");
+        });
     },
   },
 };
